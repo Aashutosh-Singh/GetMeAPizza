@@ -20,13 +20,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body  className={`${geistSans.variable} ${geistMono.variable} antialiased`} >
+      <body  className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen relative bg-[#021526] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(50,59,58,0.3),rgba(200,200,200,0))]`} >
+
         <Navbar/>
-        <div className="absolute top-0 z-[-10] min-h-screen w-screen bg-neutral-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(50,59,58,0.3),rgba(200,200,200,0))]"></div>
-        
         {children}
-        
         <Footer/>
+
       </body>
     </html>
   );
