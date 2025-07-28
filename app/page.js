@@ -7,17 +7,39 @@ export default function Home() {
         <img src="pizza.png" alt="pizza" className="w-20 animatepizza animate-bounce"/></div>
         <div className="flex flex-col gap-6 items-center">
       <p>A crowdfunding platform for <i>Individuals</i>. Get funded by your fans and followers. Start now! </p>
-      <div >
-        <button className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white ">
-          <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
-          Start Here
+      <div className="flex gap-4">
+        <div className="relative group inline">
+        <button className="relative inline-block p-px font-semibold leading-6 text-white  hover:bg-gray-900 shadow-2xl cursor-pointer rounded-xl shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95">
+          <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500   p-[2px] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+          <span className="relative z-10 block px-6 py-3 rounded-xl bg-gradient-to-br from-purple-950 to-blue-950 hover:bg-gray-950 ">
+            <div className="relative z-10 flex items-center space-x-2 ">
+              <span className="transition-all duration-500 group-hover:translate-x-1">Start Here</span>
+              <svg className="w-6 h-6 transition-transform duration-500 group-hover:translate-x-1" data-slot="icon" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path clipRule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" fillRule="evenodd" />
+              </svg>
+            </div>
           </span>
-          </button>
-          <button className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white">
-            <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
-            Read More
-            </span>
-            </button>
+        </button>
+      </div>
+      <div className="relative group inline">
+        <button className="relative inline-block p-px font-semibold leading-6 text-white bg-gray-800 shadow-2xl cursor-pointer rounded-xl shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95">
+          <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 p-[2px] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+          <span className="relative z-10 block px-6 py-3 rounded-xl bg-gray-950">
+            <div className="relative z-10 flex items-center space-x-2">
+              <span className="transition-all duration-500 group-hover:translate-x-1">Read More</span>
+              <svg className="w-6 h-6 transition-transform duration-500 group-hover:translate-x-1" data-slot="icon" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path clipRule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" fillRule="evenodd" />
+              </svg>
+            </div>
+          </span>
+        </button>
+      </div>
+    
+
+
+
+
+
       </div>
       </div>
 </div>
@@ -44,7 +66,7 @@ export default function Home() {
   </div>
   
 </div>
-<div className="bg-white h-0.5 opacity-10 my-10"></div>
+<div className="bg-white h-0.5 opacity-10 mt-10"></div>
     <div className="text-white container mx-auto pb-32 pt-14 flex flex-col items-center justify-center">
         <h2 className="text-3xl font-bold text-center mb-14">Learn more about us</h2>
         {/* Responsive youtube embed  */}
