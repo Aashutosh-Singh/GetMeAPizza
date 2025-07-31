@@ -4,8 +4,10 @@ import {useSession, signIn, signOut} from 'next-auth/react'
 import Link from 'next/link'
 export default function navbar(){
     const {data:session}=useSession();
+    
     const [dropdown,setDropdown]=useState(false)
     if(session){
+        console.log(session.user.image)
         return(<>
         <nav className="bg-[#021526] text-[#F5EDED] flex items-center justify-between px-10 py-2">
            <Link href="/"><div className="logo font-bold flex">
@@ -21,17 +23,17 @@ export default function navbar(){
             }, 300);
           }}>
                         <img src={`${session.user.image}`} className="rounded-full w-10 h-10"/>
-                        <div className={`${dropdown?"":"hidden"} absolute right-15 top-15 divide-y flex flex-col divide-gray-300 rounded-lg font-medium bg-gray-950`}>
+                        
+                </button>
+           </div>
+        </nav>
+            <div className={`${dropdown?"":"hidden"} absolute right-15 top-15 divide-y flex flex-col divide-gray-300 rounded-lg font-medium bg-gray-950 z-110`}>
                     <Link href='/profile'><div className="p-4 hover:bg-gray-800 flex gap-2 items-center"><img src={`${session.user.image}`} className="rounded-full w-8 h-8"/>Profile</div></Link>
                     <Link href='/dashboard'><div className="p-4 hover:bg-gray-800 flex gap-2 items-center"><span className="invert"><img className="w-5" src="/dashboard.png"/></span>Dashboard</div></Link>
                     
                     <div onClick={()=>{signOut()}} className="p-4 hover:bg-gray-800 flex gap-2 items-center"><span className="invert"><img className="w-6" src="/exit.png"/></span>Sign Out</div>
                 
                     </div>
-                </button>
-           </div>
-        </nav>
-            
         </>)
     }
     else{
