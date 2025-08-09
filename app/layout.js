@@ -15,14 +15,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "GetMeAPizza",
+  title: "BuyMeAPizza",
   description: "Fund your project through pizza",
+  icon:"/pizza.png"
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body  className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen relative bg-[#021526] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(50,59,58,0.3),rgba(200,200,200,0))] text-[#F5EDED]`} cz-sortcut-listen="true">
+      <body  className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen relative h-full w-full -z-100   bg-[radial-gradient(circle_at_center,#FFF991,transparent)] text-black`}>
         <SessionWrapper>
         <Navbar/>
         <div className="min-h-screen">
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
         </div>
         <Footer/>
         </SessionWrapper>
+        
       </body>
     </html>
   );

@@ -1,8 +1,8 @@
 import mongoose from 'mongoose'
 const {Schema,model}=mongoose;
 const paymentSchema=new Schema({
-    creator:{type:mongoose.Schema.Types.ObjectId,ref:'user',required:true},
-    supporter:{type:mongoose.Schema.Types.ObjectId,ref:'user',required:true},
+    creator:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true},
+    supporter:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true},
     message:String,
     transactionId:{type:String,unique:true,required:true,index:true},
     amount:{type:Number,required:true},

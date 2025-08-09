@@ -70,12 +70,15 @@ const handler = NextAuth({
       const currentUser=await User.findOne({
         email:session.user.email
       })
-      session.user.id=currentUser.id.toString();
+      if(currentUser){
+        session.user.id=currentUser.id.toString();
       session.user.profilePic=currentUser.profilePic;
       session.user.coverPic=currentUser.coverPic;
-      session.user.tagLine=currentUser.tagline;
+      session.user.tagline=currentUser.tagline;
       session.user.handle=currentUser.handle;
       session.user.name=currentUser.name;
+      
+      }
       return session;
     },
     async redirect({ baseUrl }) {

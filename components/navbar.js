@@ -9,13 +9,13 @@ export default function navbar(){
     if(session){
         console.log(session.user.image)
         return(<>
-        <nav className="bg-[#021526] text-[#F5EDED] flex items-center justify-between px-10 py-2">
+        <nav className="bg-[#FFF991] flex items-center justify-between px-10 py-1">
            <Link href="/"><div className="logo font-bold flex">
-            <span><img className="w-6" src="/pizza.png"/></span>
-            GetMeAPizza</div></Link>
+            <span><img className="md:h-14 h-10" src="/logo.png"/></span>
+            </div></Link>
            <div className="flex gap-8 items-center">
-                <div className="p-2 items-center cursor-pointer font-bold ">
-                    Welcome <span className="text-xl"> {session.user.name}</span>
+                <div className="p-2 items-center cursor-pointer hidden sm:flex gap-2 lg:text-lg font-bold ">
+                    Welcome <span className=" lg:text-lg"> {session.user.name}</span>
                 </div>
                 <button  onClick={()=>{setDropdown(!dropdown);console.log(dropdown)}} onBlur={() => {
             setTimeout(() => {
@@ -27,22 +27,22 @@ export default function navbar(){
                 </button>
            </div>
         </nav>
-            <div className={`${dropdown?"":"hidden"} absolute right-15 top-15 divide-y flex flex-col divide-gray-300 rounded-lg font-medium bg-gray-950 z-110`}>
-                    <Link href='/profile'><div className="p-4 hover:bg-gray-800 flex gap-2 items-center"><img src={`${session.user.image}`} className="rounded-full w-8 h-8"/>Profile</div></Link>
-                    <Link href='/dashboard'><div className="p-4 hover:bg-gray-800 flex gap-2 items-center"><span className="invert"><img className="w-5" src="/dashboard.png"/></span>Dashboard</div></Link>
-                    
-                    <div onClick={()=>{signOut()}} className="p-4 hover:bg-gray-800 flex gap-2 items-center"><span className="invert"><img className="w-6" src="/exit.png"/></span>Sign Out</div>
-                
+            <div className={`${dropdown?"":"hidden"} absolute right-15 top-15 divide-y flex flex-col divide-gray-300 rounded-lg font-medium bg-[#FFF991]/40 backdrop-blur-md z-110`}>
+                    <Link href='/profile'><div className="p-4 hover:text-white hover:bg-gray-800 flex gap-2 items-center"><img src={`${session.user.image}`} className="rounded-full w-8 h-8"/>Profile</div></Link>
+                    <Link href='/dashboard'><div className="p-4 hover:bg-gray-200 flex gap-2 items-center hover:invert"><span className="hover:invert"><img className="w-5" src="/dashboard.png"/></span>Dashboard</div></Link>
+
+                    <div onClick={()=>{signOut()}} className="p-4 hover:bg-gray-200 flex gap-2 items-center hover:invert"><span className="hover:invert"><img className="w-6" src="/exit.png"/></span>Sign Out</div>
+
                     </div>
         </>)
     }
     else{
         return(
         <>
-        <nav className="bg-[#021526] text-[#F5EDED] flex items-center justify-between px-5">
+        <nav className="bg-[#FFF991] text-[#F5EDED] flex items-center justify-between px-5">
            <div className="logo font-bold flex">
-            <span><img className="w-6" src="/pizza.png"/></span>
-            GetMeAPizza</div>
+            <span><img className="md:h-14 h-10" src="/logo.png"/></span>
+            </div>
            {/* <ul className="flex  items-center font-medium">
                 <Link href="/"><li className="p-4 hover hover:bg-gradient-to-br from-purple-600 to-blue-500 ">Home</li></Link>
                 <Link href="/about"><li className="p-4 hover:bg-gradient-to-br from-purple-600 to-blue-500 " >About</li></Link>
