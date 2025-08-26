@@ -211,11 +211,26 @@ export default function dashboard() {
                 </form>
               </div>
             </div>
-            <div className="payment md:w-[48%] h-100 bg-gray-800 shadow-lg shadow-gray-700 rounded-xl border-1 border-gray-600">
-              <div className="p-4">
+            <div className="flex flex-col justify-center payment md:w-[48%] h-100 bg-gray-800/10 shadow-lg shadow-gray-700 rounded-xl border-1 border-gray-600">
+              <div className="p-10">
                 <div>
-                  <div className="font-bold mb-4">Make a payment</div>
-                  <div className="flex gap-2 flex-col"></div>
+                  <div className="font-bold mb-4 text-2xl">Update payment details</div>
+                  <form className="flex flex-col gap-4">
+                    <input type="text" placeholder="Razorpay Id" name="rpzid" className="border-1 border-black bg-black/10 rounded-lg p-2 text-black">
+                    </input>
+                    <input type="text" placeholder="Razorpay Key" name="rpzkey" className="border-1 border-black bg-black/10 rounded-lg p-2 text-black">
+                    </input>
+                    <button disabled={!validHandle} className={`${validHandle?"":"cursor-not-allowed"}  mt-2 group relative inline-block p-px font-semibold leading-6 text-white bg-gray-800 shadow-sm cursor-pointer rounded-xl shadow-zinc-600 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95`}>
+                      <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 p-[2px] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                      <span className="relative z-10 block px-6 py-3 rounded-xl bg-gray-950">
+                        <div className="relative z-10 flex items-center justify-center space-x-2">
+                          <span className="transition-all duration-500 group-hover:translate-x-1">
+                            Update
+                          </span>
+                        </div>
+                      </span>
+                    </button>
+                  </form>
                   <div className="w-full mt-2">{/* payment sortcut */}</div>
                 </div>
               </div>

@@ -19,7 +19,7 @@ const handler = NextAuth({
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       
-      console.log("user: ", user);
+      // console.log("user: ", user);
       
       try {
         if (mongoose.connection.readyState !== 1) {
@@ -27,7 +27,7 @@ const handler = NextAuth({
           console.log("The connection was established")
         }
         if (account.provider == "google") {
-          console.log("Working with db")
+          //console.log("Working with db")
           const currentUser = await User.findOne({
             authProvider: "google",
             googleId: user.id,
@@ -43,7 +43,7 @@ const handler = NextAuth({
               profilePic: user.image,
             });
             await newUser.save();
-            console.log("The user was saved")
+            //console.log("The user was saved")
             return true;
           } else if (currentUser) {
             return true;
