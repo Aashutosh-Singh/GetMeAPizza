@@ -3,7 +3,7 @@ import { Rock_3D } from 'next/font/google';
 const{Schema,model}=mongoose;
 const userSchema=new Schema({
     email:{type:String, required:true,unique:true,index:true},
-    handle:{type:String,unique:true, minLength:3,sparse:true,lowercase:true,trim:true,maxLength:50},
+    handle:{type:String,unique:true, minLength:3,sparse:true,lowercase:true,trim:true,maxLength:25},
     name:{type:String,maxLength:25, minLength:3,trim:true},
     password:{type:String},
     googleId:{type:String,unique:true,sparse:true},

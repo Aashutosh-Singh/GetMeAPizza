@@ -102,6 +102,25 @@ export default function profile() {
             </div>
             <div className="payment md:w-[48%] min-h-100 bg-gray-900/10 backdrop-blur-md shadow-lg shadow-gray-700 rounded-xl border-1 border-gray-600 p-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl mx-auto">
+                
+                {/* Handle Name */}
+                <div className="rounded-2xl border border-gray-800 bg-white/10 p-6 shadow-sm hover:shadow-md transition">
+                  <div className="text-gray-500 text-sm">Handle Name</div>
+                  <div className="text-sm font-semibold text-gray-900 mt-2">
+                    @aashutoshsingh2268381rajj
+                  </div>
+                </div>
+
+                {/* Total Money Received */}
+                <div className="rounded-2xl border border-gray-800 bg-white/10 p-6 shadow-sm hover:shadow-md transition ">
+                  <div className="text-gray-500 text-sm">
+                    Total Money Received
+                  </div>
+                  <div className="text-3xl font-semibold text-green-600 mt-2">
+                    ₹60
+                  </div>
+                </div>
+                
                 {/* Followers */}
                 <div className="rounded-2xl border border-gray-800 bg-white/10 p-6 shadow-sm hover:shadow-md transition">
                   <div className="text-gray-500 text-sm">Followers</div>
@@ -118,15 +137,7 @@ export default function profile() {
                   </div>
                 </div>
 
-                {/* Total Money Received */}
-                <div className="rounded-2xl border border-gray-800 bg-white/10 p-6 shadow-sm hover:shadow-md transition md:col-span-2">
-                  <div className="text-gray-500 text-sm">
-                    Total Money Received
-                  </div>
-                  <div className="text-3xl font-semibold text-green-600 mt-2">
-                    ₹60
-                  </div>
-                </div>
+                  
 
                 {/* About Me */}
                 <div className="rounded-2xl border border-gray-800 bg-white/10 p-6 shadow-sm hover:shadow-md transition md:col-span-2">

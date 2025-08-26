@@ -1,13 +1,18 @@
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import User from "@/models/user";
 export async function POST(req) {
-   
+  const session = await getServerSession();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { name,email, handle, tagline, profilePic, coverPic } = await req.json();
     
-    if ((handle.length < 3 && handle.length!==0) || handle.length > 20  ) {
-      return NextResponse.json({ error: "Handle must be between 3 and 20 characters" }, { status: 400 });
+    if ((handle.length < 3 && handle.length!==0) || handle.length > 25  ) {
+      return NextResponse.json({ error: "Handle must be between 3 and 25 characters" }, { status: 400 });
     }
     
     if(mongoose.connection.readyState!==1){
@@ -16,7 +21,7 @@ export async function POST(req) {
     const user=await User.findOne({ email: email });
     
     if(user.handle===handle){
-      if(name.length>3 && name.length<50){
+      if(name.length>3 && name.length<25){
         user.name=name;
       }
       user.name=name;
@@ -37,7 +42,7 @@ export async function POST(req) {
         return NextResponse.json({ error: "Handle already exists" }, { status: 400 });
       }
       else{
-        if(name.length>3 && name.length<50){
+        if(name.length>3 && name.length<25){
           user.name=name;
         }
         user.handle=handle;

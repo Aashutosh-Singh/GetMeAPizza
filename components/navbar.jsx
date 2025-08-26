@@ -22,12 +22,12 @@ export default function Navbar() {
   // Local fallback data (only used if API is not ready)
   const FALLBACK_CREATORS = useMemo(
     () => [
-      { handle: "aash_creates", name: "Aashutosh Singh", avatar: "/avatar-aash.png" },
-      { handle: "janedoe", name: "Jane Doe", avatar: "/avatar-jane.png" },
-      { handle: "pixelpanda", name: "Pixel Panda", avatar: "/avatar-1.png" },
-      { handle: "devdisha", name: "Disha Dev", avatar: "/avatar-2.png" },
-      { handle: "artbyaj", name: "Art by AJ", avatar: "/avatar-3.png" },
-      { handle: "chef_nova", name: "Chef Nova", avatar: "/avatar-4.png" },
+      { handle: "aash_creates", name: "Aashutosh Singh", profilePic: "/profilePic-aash.png" },
+      { handle: "janedoe", name: "Jane Doe", profilePic: "/profilePic-jane.png" },
+      { handle: "pixelpanda", name: "Pixel Panda", profilePic: "/profilePic-1.png" },
+      { handle: "devdisha", name: "Disha Dev", profilePic: "/profilePic-2.png" },
+      { handle: "artbyaj", name: "Art by AJ", profilePic: "/profilePic-3.png" },
+      { handle: "chef_nova", name: "Chef Nova", profilePic: "/profilePic-4.png" },
     ],
     []
   );
@@ -166,7 +166,7 @@ export default function Navbar() {
                 aria-expanded={dropdown}
               >
                 <img
-                  src={session.user?.image || "/default-avatar.png"}
+                  src={session.user?.image || "/default-profilePic.png"}
                   className="rounded-full w-10 h-10"
                   alt="User"
                 />
@@ -178,7 +178,7 @@ export default function Navbar() {
                 role="menu"
               >
                 <Link href="/profile" className="flex items-center gap-2 p-4 hover:bg-black/5" role="menuitem">
-                  <img src={session.user?.image || "/default-avatar.png"} className="w-8 h-8 rounded-full" alt="" />
+                  <img src={session.user?.image || "/default-profilePic.png"} className="w-8 h-8 rounded-full" alt="" />
                   <span>Profile</span>
                 </Link>
 
@@ -186,7 +186,10 @@ export default function Navbar() {
                   <img className="w-5" src="/dashboard.png" alt="" />
                   <span>Dashboard</span>
                 </Link>
-
+                <Link href="/about" className="flex items-center gap-2 p-4 hover:bg-black/5" role="menuitem">
+                  <img className="w-5" src="/about.png" alt="" />
+                  <span>About</span>
+                </Link>
                 <button
                   onClick={() => signOut()}
                   className="w-full text-left flex items-center gap-2 p-4 hover:bg-black/5"
@@ -216,7 +219,7 @@ export default function Navbar() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={onInputKeyDown}
-                  placeholder="Search creators by handle (e.g., @janedoe)"
+                  placeholder="Search creators by handle (e.g., @aashutosh)"
                   className="w-full bg-white/70 placeholder:text-slate-500 text-slate-800 text-sm border border-slate-300 rounded-md pl-3 pr-28 py-2 focus:outline-none focus:border-slate-500 shadow-sm"
                   aria-autocomplete="list"
                   aria-controls="creator-results"
@@ -242,7 +245,7 @@ export default function Navbar() {
                     {searchResults.map((c, idx) => (
                       <li key={c.handle}>
                         <Link
-                          href={`/creator/${c.handle}`}
+                          href={`/${c.handle}`}
                           className={`flex items-center gap-3 p-3 hover:bg-slate-50 ${idx === activeIndex ? "bg-slate-100" : ""}`}
                           role="option"
                           aria-selected={idx === activeIndex}
@@ -250,7 +253,7 @@ export default function Navbar() {
                           onClick={closeSearch}
                         >
                           <img
-                            src={c.avatar || "/default-avatar.png"}
+                            src={c.profilePic || "/default-profilePic.png"}
                             alt=""
                             className="w-8 h-8 rounded-full"
                           />

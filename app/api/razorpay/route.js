@@ -1,5 +1,6 @@
 'use server'
 import { NextResponse } from 'next/server';
+import { connectDB } from "@/lib/mongodb";
 import Payment from "@/models/payment";
 import User from "@/models/user";
 import mongoose from 'mongoose';
@@ -7,9 +8,7 @@ import mongoose from 'mongoose';
 const crypto = await import('crypto');
 
 async function POST(req) {
-    if (mongoose.connection.readyState !== 1) {
-        await mongoose.connect(process.env.MONGO_URI);
-    }
+    await connectDB();
     let body = await req.formData();
     body = Object.fromEntries(body);
     let p = await Payment.findOne({ transactionId: body.razorpay_order_id });
