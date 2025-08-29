@@ -127,7 +127,7 @@ export default function Paymentpage({ user }) {
             ></textarea>
 
             <button
-              disabled={!session}
+              disabled={!session || !user.hasRazorpay || !amount || parseInt(amount) < 1}
               onClick={() => pay(amount, paymentform)}
               className="overflow-hidden relative w-full p-2 h-10 bg-black text-white border-none rounded-md text-xl font-bold cursor-pointer z-10 group "
             >
@@ -148,7 +148,7 @@ export default function Paymentpage({ user }) {
                 {[100, 200, 500, 1000, 5000, 10000].map((amt) => (
                   <button
                     key={amt}
-                    disabled={!session}
+                    disabled={!session || !user.hasRazorpay}
                     onClick={() => {
                       setAmount(String(amt));
                       pay(amt, paymentform);

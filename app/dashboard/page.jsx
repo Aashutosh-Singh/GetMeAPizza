@@ -18,7 +18,7 @@ export default function Dashboard() {
   const [hasPayment, setHasPayment] = useState(false);
   const [loadingPayment, setLoadingPayment] = useState(false);
   const [showKey, setShowKey] = useState(false);
-
+  
   const coverInputRef = useRef(null);
   const profileInputRef = useRef(null);
 

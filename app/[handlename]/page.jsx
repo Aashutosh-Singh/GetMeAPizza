@@ -22,7 +22,7 @@ export default function CreatorPage() {
   const [followers, setFollowers] = useState(0);
   const [following, setFollowing] = useState(0);
   const [followLoading, setFollowLoading] = useState(false);
-
+  const [hasRazorpay, setHasRazorpay] = useState(false);
   // 🔹 Fetch profile
   useEffect(() => {
     let mounted = true;

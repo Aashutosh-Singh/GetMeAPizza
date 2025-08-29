@@ -8,4 +8,4 @@ const razorpaySchema=new Schema({
 
 });
 
-export default mongoose.models.Razorpay || model('Razorpay',razorpaySchema);
+export default mongoose.models.Razorpaydetail || model('Razorpaydetail',razorpaySchema);

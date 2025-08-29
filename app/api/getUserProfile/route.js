@@ -3,6 +3,7 @@ import User from "@/models/user";
 import {NextResponse} from 'next/server';
 import mongoose from 'mongoose';
 import { connectDB } from "@/lib/mongodb";
+import Razorpay from "@/models/razorpay";
 /**
  * Handles GET requests to fetch a user profile by handle.
  * @param {Object} req - The request object containing nextUrl with searchParams.
@@ -24,10 +25,15 @@ export async function GET(req){
         if(!user){
             return NextResponse.json({error:"User not found"}, {status:404});
         }
+
+        // Check if user has a Razorpay account
+        const has = await Razorpay.exists({ userId: user._id });
+        const hasRazorpay = !!has;
+
         // Sanitize user object to exclude sensitive fields
         
         const { _id, handle, name, tagline, profilePic, coverPic,bio } = user;
-        return NextResponse.json({ user: { _id, handle, name, tagline, profilePic, coverPic,bio } }, { status:200 });
+        return NextResponse.json({ user: { _id, handle, name, tagline, profilePic, coverPic,bio , hasRazorpay } }, { status:200 });
     }
     
 }

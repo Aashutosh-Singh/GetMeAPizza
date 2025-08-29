@@ -2,58 +2,84 @@
 
 import Razorpay from "razorpay";
 import Payment from "@/models/payment";
-import RazorpayKeys from "@/models/razorpay";
+import Razorpaydetail from "@/models/razorpay";
 import { connectDB } from "@/lib/mongodb";
 import crypto from "crypto";
 
-// AES decryption setup
-const algorithm = "aes-256-ctr";
-const secretKey = Buffer.from(process.env.RAZORPAY_ENCRYPTION_KEY, "hex"); // must be 32 bytes
+/**
+ * AES-256-CTR decryption.
+ * Expecting `hash` format: "<ivHex>:<encryptedHex>"
+ * Environment var RAZORPAY_ENCRYPTION_KEY must be a 64-char hex string (32 bytes)
+ */
+const ALGORITHM = "aes-256-ctr";
+const ENC_KEY_HEX = process.env.RAZORPAY_ENCRYPTION_KEY || "";
+
+function getSecretKey() {
+  if (!ENC_KEY_HEX) throw new Error("Encryption key missing");
+  const buf = Buffer.from(ENC_KEY_HEX, "hex");
+  if (buf.length !== 32) {
+    throw new Error("Invalid encryption key length; expected 32 bytes (64 hex chars)");
+  }
+  return buf;
+}
 
 function decrypt(hash) {
   try {
     if (!hash || typeof hash !== "string") {
-      throw new Error("Invalid encrypted data");
+      throw new Error("Invalid encrypted value");
     }
 
-    const [ivHex, encryptedHex] = hash.split(":");
-    if (!ivHex || !encryptedHex) {
+    const parts = hash.split(":");
+    if (parts.length !== 2) {
       throw new Error("Malformed encrypted string");
     }
+
+    const [ivHex, encryptedHex] = parts;
+    if (!ivHex || !encryptedHex) throw new Error("Malformed encrypted string");
 
     const iv = Buffer.from(ivHex, "hex");
     const encryptedText = Buffer.from(encryptedHex, "hex");
 
-    const decipher = crypto.createDecipheriv(algorithm, secretKey, iv);
+    const secretKey = getSecretKey();
+    const decipher = crypto.createDecipheriv(ALGORITHM, secretKey, iv);
     const decrypted = Buffer.concat([decipher.update(encryptedText), decipher.final()]);
 
-    return decrypted.toString();
+    return decrypted.toString("utf8");
   } catch (err) {
-    console.error("❌ Decryption failed:", err.message);
-    throw new Error("Failed to decrypt Razorpay credentials");
+    // Log full internal error for debugging (do NOT send this to client)
+    console.error("❌ Decryption failed:", err);
+    // Throw generic error to caller
+    throw new Error("Failed to decrypt credentials");
   }
 }
 
+/**
+ * initiate(amount, paymentform)
+ * - amount: number (rupees)
+ * - paymentform: { creator: STRING, supporter: STRING, message?: STRING }
+ *
+ * Returns safe order info for frontend: { orderId, amountInPaise, currency, keyId }
+ */
 export default async function initiate(amount, paymentform) {
   try {
+    // Connect DB
     await connectDB();
 
-    // ✅ Validate inputs
-    if (!paymentform?.creator || !paymentform?.supporter) {
-      throw new Error("Creator and supporter must be provided");
+    // Basic validations
+    if (!paymentform || !paymentform.creator || !paymentform.supporter) {
+      throw new Error("Creator and supporter are required");
     }
-
-    if (typeof amount !== "number" || isNaN(amount) || amount <= 0) {
+    if (typeof amount !== "number" || Number.isNaN(amount) || amount <= 0) {
       throw new Error("Invalid payment amount");
     }
 
-    // ✅ Fetch creator’s Razorpay keys
-    const razorpayKeys = await RazorpayKeys.findOne({ user: paymentform.creator });
+    // Fetch razorpay credentials for creator
+    const razorpayKeys = await Razorpaydetail.findOne({ user: paymentform.creator });
     if (!razorpayKeys) {
-      throw new Error("Creator has not set up Razorpay credentials");
+      throw new Error("Creator has not configured Razorpay");
     }
 
-    // ✅ Decrypt keys
+    // Decrypt credentials
     const keyId = decrypt(razorpayKeys.encryptedKeyId);
     const keySecret = decrypt(razorpayKeys.encryptedSecret);
 
@@ -61,32 +87,51 @@ export default async function initiate(amount, paymentform) {
       throw new Error("Invalid Razorpay credentials");
     }
 
-    // ✅ Create Razorpay instance
+    // Create instance
     const instance = new Razorpay({ key_id: keyId, key_secret: keySecret });
 
-    // ✅ Create order
+    // Prepare amount in paise (Razorpay expects smallest currency unit)
+    const amountInPaise = Math.round(amount * 100);
+
+    // Create order on Razorpay
     const order = await instance.orders.create({
-      amount: Math.round(amount * 100), // convert to paise
+      amount: amountInPaise,
       currency: "INR",
-      payment_capture: 1, // auto-capture enabled
+      payment_capture: 1, // auto-capture
+      notes: {
+        creator: String(paymentform.creator),
+        supporter: String(paymentform.supporter),
+      },
     });
 
-    if (!order?.id) {
+    if (!order || !order.id) {
       throw new Error("Failed to create Razorpay order");
     }
-    order.keyId = keyId; // attach keyId for frontend use
-    // ✅ Save payment record in DB
+
+    // Save a pending payment record (don't mark as success until webhook confirms)
     await Payment.create({
       creator: paymentform.creator,
       supporter: paymentform.supporter,
       message: paymentform.message?.trim() || "",
       transactionId: order.id,
-      amount: Math.round(amount),
+      amount: Math.round(amount), // keep rupees for convenience if you used this before
+      amountInPaise,
+      currency: order.currency || "INR",
+      status: "pending",
+      createdAt: new Date(),
     });
 
-    return order;
+    // Only return safe details to frontend (never send key_secret)
+    return {
+      orderId: order.id,
+      amountInPaise,
+      currency: order.currency || "INR",
+      keyId,
+    };
   } catch (err) {
-    console.error("❌ Payment initiation failed:", err.message);
-    throw new Error(err.message || "Unexpected error during payment initiation");
+    // Log full error server-side for debugging
+    console.error("❌ Payment initiation failed:", err);
+    // Throw a generic message to caller so internals are not leaked
+    throw new Error("Could not initiate payment. Please try again later.");
   }
 }
