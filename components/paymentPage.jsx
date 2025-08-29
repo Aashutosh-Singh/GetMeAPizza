@@ -36,7 +36,7 @@ export default function Paymentpage({ user }) {
   const handleAmountChange = (e) => {
     e.preventDefault();
     let value = e.target.value.trim().replace(/[^0-9]/g, "");
-    setAmount(value);
+    setAmount(String(value));
   };
 
   const handleMessageChange = (e) => {
