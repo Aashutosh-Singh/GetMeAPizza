@@ -131,16 +131,16 @@ export default function Navbar() {
   if (session) {
     return (
       <>
-        <nav className={`${brandBg} relative flex items-center justify-between px-4 md:px-10 py-1`}>
+        <nav className={`${brandBg} relative flex items-center justify-between px-4 md:px-10 py-2`}>
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <img className="md:h-10 h-8" src="/logo.png" alt="Logo" />
+            <img className="h-10 " src="/logo.png" alt="Logo" />
           </Link>
 
           {/* Search trigger */}
           <button
             onClick={openSearch}
-            className={`flex items-center rounded px-3 py-1 sm:py-2 text-xs sm:text-sm shadow-sm ${darkBtn}`}
+            className={`flex items-center rounded px-3 py-2 text-sm shadow-sm ${darkBtn}`}
             type="button"
             aria-label="Open search"
           >
@@ -166,8 +166,8 @@ export default function Navbar() {
                 aria-expanded={dropdown}
               >
                 <img
-                  src={`${session?.user?.profilePic || "/menu.png"}`}
-                  className="rounded-full md:w-9 md:h-9 w-6 h-6"
+                  src={`${session.user?.profilePic || "/menu.png"}`}
+                  className="rounded-full md:w-9 md:h-9 w-7 h-7"
                   alt="User"
                 />
               </button>
@@ -178,7 +178,7 @@ export default function Navbar() {
                 role="menu"
               >
                 <Link href="/profile" className="flex items-center gap-2 p-4 hover:bg-black/5" role="menuitem">
-                  <img src={`${session?.user?.profilePic || "/profilepic.jpg"}`} className="w-8 h-8 rounded-full" alt="" />
+                  <img src={`${session.user?.profilePic || "/profilepic.jpg"}`} className="w-8 h-8 rounded-full" alt="" />
                   <span>Profile</span>
                 </Link>
 
@@ -282,9 +282,9 @@ export default function Navbar() {
   return (
     <nav className={`${brandBg} flex items-center justify-between px-5 py-1`}>
       <Link href="/" className="font-bold flex">
-        <img className="md:h-10 h-8" src="/logo.png" alt="Logo" />
+        <img className="h-10" src="/logo.png" alt="Logo" />
       </Link>
-      <div className="flex gap-3 text-xs sm:text-md">
+      <div className="flex gap-3 text-md">
       <Link href="/login">
         <button className={`px-2 md:px-5 py-1 sm:py-2 rounded-lg shadow-sm ${darkBtn}`}>
           Login
