@@ -8,11 +8,17 @@ import { Eye, EyeOff } from "lucide-react";
 export default function ResetPassword() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const handle = searchParams.get("handle");
+  const [handle, setHandle] = useState(null);
+
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [show, setShow] = useState(false); 
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  setHandle(params.get("handle"));
+}, []);
 
   const handleReset = useCallback(async (e) => {
     e.preventDefault();
