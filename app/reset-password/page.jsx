@@ -1,22 +1,25 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useCallback, useEffect } from "react"; // ✅ added useEffect
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function ResetPassword() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [handle, setHandle] = useState(null);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [show, setShow] = useState(false);
+
+  // ✅ client-safe way to get query params
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setHandle(params.get("handle"));
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      setHandle(params.get("handle"));
+    }
   }, []);
 
   const handleReset = useCallback(
@@ -37,7 +40,6 @@ export default function ResetPassword() {
       }
 
       try {
-        console.log("handle: ", handle);
         const res = await fetch("/api/auth/reset-password", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -49,14 +51,14 @@ export default function ResetPassword() {
         if (!res.ok) throw new Error(data.message || "Something went wrong");
 
         setSuccess("Password reset successful! Redirecting...");
-        setTimeout(() => router.push("/login"), 200);
+        setTimeout(() => router.push("/login"), 1000);
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     },
-    [router]
+    [router, handle] // ✅ added handle as dependency
   );
 
   return (
@@ -87,7 +89,7 @@ export default function ResetPassword() {
             required
           />
 
-          {/* Password field with toggle */}
+          {/* Password fields */}
           <PasswordField
             id="password"
             label="New Password"
@@ -95,7 +97,6 @@ export default function ResetPassword() {
             show={show}
             setShow={setShow}
           />
-
           <PasswordField
             id="confirmPassword"
             label="Confirm Password"
