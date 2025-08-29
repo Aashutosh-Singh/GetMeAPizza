@@ -6,7 +6,17 @@ export async function middleware(req) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const { pathname } = req.nextUrl;
 
-  // Allow the following paths without auth
+  // ✅ Allow homepage
+  if (pathname === "/") {
+    return NextResponse.next();
+  }
+
+  // ✅ Allow all files from /public (anything with an extension like .png, .jpg, .css, .js, etc.)
+  if (/\.(.*)$/.test(pathname)) {
+    return NextResponse.next();
+  }
+
+  // ✅ Allow these public paths
   const publicPaths = [
     "/login",
     "/signup",
@@ -14,22 +24,18 @@ export async function middleware(req) {
     "/forgot-password",
     "/reset-password",
     "/verify",
-    "/info"
+    "/info",
   ];
-
   if (
     token ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/static") ||
-   
-    
     publicPaths.some((path) => pathname.startsWith(path))
   ) {
     return NextResponse.next();
   }
 
-  // Redirect to login if trying to access a protected route
+  // ❌ Redirect to login if trying to access a protected route
   if (!token) {
     const loginUrl = new URL("/login", req.url);
     return NextResponse.redirect(loginUrl);
@@ -38,10 +44,9 @@ export async function middleware(req) {
   return NextResponse.next();
 }
 
-// Apply middleware to all routes except explicitly public
 export const config = {
   matcher: [
-    // Run on all routes except NEXT internals, static, favicon etc.
-    "/((?!_next/static|_next/image|pizza.png|logo.png).*)",
+    // run middleware on everything except Next internals
+    "/((?!_next).*)",
   ],
 };
