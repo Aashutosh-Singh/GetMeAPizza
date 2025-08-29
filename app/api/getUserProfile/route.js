@@ -3,7 +3,7 @@ import User from "@/models/user";
 import {NextResponse} from 'next/server';
 import mongoose from 'mongoose';
 import { connectDB } from "@/lib/mongodb";
-import Razorpay from "@/models/razorpay";
+import Razorpaydetail from "@/models/razorpay";
 /**
  * Handles GET requests to fetch a user profile by handle.
  * @param {Object} req - The request object containing nextUrl with searchParams.
@@ -27,8 +27,10 @@ export async function GET(req){
         }
 
         // Check if user has a Razorpay account
-        const has = await Razorpay.exists({ userId: user._id });
-        const hasRazorpay = !!has;
+        
+        const hasRazorpay = !!(await Razorpaydetail.exists({ user: user._id }));
+
+        
 
         // Sanitize user object to exclude sensitive fields
         

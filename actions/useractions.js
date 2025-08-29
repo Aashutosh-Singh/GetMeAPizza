@@ -82,6 +82,8 @@ export default async function initiate(amount, paymentform) {
     // Decrypt credentials
     const keyId = decrypt(razorpayKeys.encryptedKeyId);
     const keySecret = decrypt(razorpayKeys.encryptedSecret);
+    
+    
 
     if (!keyId || !keySecret) {
       throw new Error("Invalid Razorpay credentials");
@@ -94,6 +96,7 @@ export default async function initiate(amount, paymentform) {
     const amountInPaise = Math.round(amount * 100);
 
     // Create order on Razorpay
+    
     const order = await instance.orders.create({
       amount: amountInPaise,
       currency: "INR",
@@ -120,10 +123,11 @@ export default async function initiate(amount, paymentform) {
       status: "pending",
       createdAt: new Date(),
     });
-
+    
     // Only return safe details to frontend (never send key_secret)
+    
     return {
-      orderId: order.id,
+      id: order.id,
       amountInPaise,
       currency: order.currency || "INR",
       keyId,

@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
 export default function Paymentpage({ user }) {
+  
   const { data: session } = useSession();
   const [amount, setAmount] = useState("");
   const [paymentform, setPaymentform] = useState({
@@ -36,7 +37,7 @@ export default function Paymentpage({ user }) {
   const handleAmountChange = (e) => {
     e.preventDefault();
     let value = e.target.value.trim().replace(/[^0-9]/g, "");
-    setAmount(String(value));
+    setAmount(Number(value));
   };
 
   const handleMessageChange = (e) => {
@@ -57,7 +58,7 @@ export default function Paymentpage({ user }) {
 
       // call server action
       const order = await initiate(amount, paymentform);
-     
+      
       if (!order || !order.id || !order.keyId) {
         throw new Error("Failed to initiate payment");
       }
@@ -150,7 +151,7 @@ export default function Paymentpage({ user }) {
                     key={amt}
                     disabled={!session || !user.hasRazorpay}
                     onClick={() => {
-                      setAmount(String(amt));
+                      setAmount(Number(amt));
                       pay(amt, paymentform);
                     }}
                     className="px-2 transition-all duration-300 hover:scale-125 flex h-8 items-center justify-center rounded-md border border-[#3490f340] bg-gray-900 text-gray-200 shadow-[0px_1px_4px] hover:shadow-[0px_4px_10px] shadow-gray-700"
@@ -161,6 +162,7 @@ export default function Paymentpage({ user }) {
               </div>
             </div>
           </div>
+          {!user.hasRazorpay && (<div className="text-red-500">You can't pay to this user. User has not configured Razorpay.</div>)}
         </div>
       </div>
     </>

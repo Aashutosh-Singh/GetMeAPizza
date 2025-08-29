@@ -18,14 +18,15 @@ export default function Dashboard() {
   const [hasPayment, setHasPayment] = useState(false);
   const [loadingPayment, setLoadingPayment] = useState(false);
   const [showKey, setShowKey] = useState(false);
-  
+
   const coverInputRef = useRef(null);
   const profileInputRef = useRef(null);
 
   // Fetch Razorpay details
   useEffect(() => {
     if (status === "authenticated") {
-      axios.get("/api/setrazorpay")
+      axios
+        .get("/api/setrazorpay")
         .then((res) => {
           if (res.data?.razorpay?.hasCredentials) setHasPayment(true);
         })
@@ -42,9 +43,10 @@ export default function Dashboard() {
   // Fetch profile data
   useEffect(() => {
     if (status === "authenticated" && session?.user?.handle) {
-      axios.get("/api/getUserProfile", {
-        params: { handle: session.user.handle },
-      })
+      axios
+        .get("/api/getUserProfile", {
+          params: { handle: session.user.handle },
+        })
         .then((res) => {
           if (res.data?.user) {
             setProfile(res.data.user);
@@ -114,10 +116,10 @@ export default function Dashboard() {
 
   // Submit payment update
   const handlePaymentSubmit = (e) => {
-    
     setLoadingPayment(true);
 
-    axios.post("/api/setrazorpay", { rpzid, rpzkey })
+    axios
+      .post("/api/setrazorpay", { rpzid, rpzkey })
       .then((res) => {
         if (res.status === 200) {
           setHasPayment(true);
@@ -275,13 +277,13 @@ export default function Dashboard() {
       </div>
 
       {/* Payment Update */}
-      <div className="flex flex-col justify-center md:basis-1/2 h-100 bg-gray-800/10 shadow-lg shadow-gray-700 rounded-xl border border-gray-600">
+      <div className="flex flex-col justify-center md:basis-1/2 h-160 bg-gray-800/10 shadow-lg shadow-gray-700 rounded-xl border border-gray-600">
         <div className="p-10">
           <div className="font-bold mb-4 text-2xl">Update payment details</div>
           <form onSubmit={handlePaymentSubmit} className="flex flex-col gap-4">
             <input
               type="text"
-              placeholder="Razorpay Id"
+              placeholder="Razorpay Key Id"
               name="rpzid"
               value={rpzid}
               onChange={(e) => setRpzid(e.target.value)}
@@ -292,7 +294,7 @@ export default function Dashboard() {
             <div className="relative">
               <input
                 type={showKey ? "text" : "password"}
-                placeholder="Razorpay Key"
+                placeholder="Razorpay Key Secret"
                 name="rpzkey"
                 value={rpzkey}
                 onChange={(e) => setRpzkey(e.target.value)}
@@ -328,6 +330,61 @@ export default function Dashboard() {
               </span>
             </button>
           </form>
+
+          <div class=" text-sm text-gray-700 py-3">
+            <div class="flex items-start gap-3">
+              <svg
+                class="w-5 h-5 text-blue-600 mt-0.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 2a10 10 0 100 20 10 10 0 000-20z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path d="M11 10h2v6h-2zM11 7h2v2h-2z" fill="currentColor" />
+              </svg>
+
+              <div>
+                <div class="font-medium text-gray-950 ">
+                  Razorpay Key ID & Secret
+                </div>
+                <p class="mt-1 text-gray-800 ">
+                  These connect your account to the payment gateway so your page
+                  can accept payments securely.
+                </p>
+
+                <ol class="mt-2 ml-4 list-decimal space-y-1 text-gray-800 ">
+                  <li>
+                    Log in to{" "}
+                    <a
+                      href="https://dashboard.razorpay.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-blue-600 hover:underline"
+                    >
+                      Razorpay Dashboard
+                    </a>
+                    .
+                  </li>
+                  <li>
+                    Go to <strong>Settings → API Keys</strong>.
+                  </li>
+                  <li>
+                    Click <strong>Generate Key</strong> (choose Live for real
+                    payments) and copy both values.
+                  </li>
+                </ol>
+
+                <div class="mt-2 text-xs text-gray-600 ">
+                  Keep these private. <strong>Do not</strong> share the Secret
+                  on client-side code or public repos.
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
