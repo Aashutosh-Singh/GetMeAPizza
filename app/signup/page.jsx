@@ -32,7 +32,7 @@ export default function SignupPage() {
     }));
     if (name === "handle") {
       setTimeout(() => {
-        console.log("Validating handle:", value.trim());
+        
         axios
           .post("/api/auth/validateHandle", { handle: value.trim() })
           .then((res) => setValidHandle(res.data.valid))

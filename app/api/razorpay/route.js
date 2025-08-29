@@ -83,7 +83,7 @@ export async function POST(req) {
       return NextResponse.json({ error: "Payment verification failed" }, { status: 400 });
     }
   } catch (err) {
-    console.error("❌ Error in payment verification:", err);
+    
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

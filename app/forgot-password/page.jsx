@@ -28,7 +28,7 @@ export default function RequestOtp() {
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.message || "Failed to send OTP");
-      console.log("data.handle: ", data.handle);
+      
       setSuccess("OTP sent to your email. Please check your inbox.");
       setTimeout(() => router.push(`/reset-password?handle=${data.handle}`), 100);
     } catch (err) {

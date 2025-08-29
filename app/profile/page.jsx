@@ -60,7 +60,7 @@ export default function ProfilePage() {
 
         // Profile Data
         if (profileRes.data?.user) {
-          console.log("Profile Data:", profileRes.data.user);
+          
           setProfileData(profileRes.data.user);
         }
       } catch (err) {

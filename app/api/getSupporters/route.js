@@ -19,7 +19,7 @@ export async function GET(req){
         if (!supporters || supporters.length === 0) {
             return NextResponse.json({ supporters: [] }, { status: 200 });
         }
-        console.log("Supporters fetched:", supporters.length);
+        
         return NextResponse.json({ supporters }, { status: 200 });
     } catch (error) {
         console.error("Error fetching supporters:", error);
