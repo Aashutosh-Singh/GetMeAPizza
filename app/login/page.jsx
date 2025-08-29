@@ -129,7 +129,7 @@ export default function Login() {
                 Password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 required
                 maxLength={16}
