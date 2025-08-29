@@ -3,59 +3,61 @@
 import { useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Eye, EyeOff } from "lucide-react"; 
+import { Eye, EyeOff } from "lucide-react";
 
 export default function ResetPassword() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [handle, setHandle] = useState(null);
 
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [show, setShow] = useState(false); 
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  setHandle(params.get("handle"));
-}, []);
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setHandle(params.get("handle"));
+  }, []);
 
-  const handleReset = useCallback(async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-    setLoading(true);
+  const handleReset = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setError("");
+      setSuccess("");
+      setLoading(true);
 
-    const otp = e.target.otp.value.trim();
-    const password = e.target.password.value;
-    const confirmPassword = e.target.confirmPassword.value;
+      const otp = e.target.otp.value.trim();
+      const password = e.target.password.value;
+      const confirmPassword = e.target.confirmPassword.value;
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match!");
-      setLoading(false);
-      return;
-    }
+      if (password !== confirmPassword) {
+        setError("Passwords do not match!");
+        setLoading(false);
+        return;
+      }
 
-    try {
-      console.log("handle: ", handle);
-      const res = await fetch("/api/auth/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ handle, otp, password }),
-      });
+      try {
+        console.log("handle: ", handle);
+        const res = await fetch("/api/auth/reset-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ handle, otp, password }),
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Something went wrong");
+        if (!res.ok) throw new Error(data.message || "Something went wrong");
 
-      setSuccess("Password reset successful! Redirecting...");
-      setTimeout(() => router.push("/login"), 200);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
+        setSuccess("Password reset successful! Redirecting...");
+        setTimeout(() => router.push("/login"), 200);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [router]
+  );
 
   return (
     <section className="flex items-center justify-center min-h-screen px-6 bg-gray-50 dark:bg-gray-900">
