@@ -1,10 +1,9 @@
 import mongoose from 'mongoose';
 import {NextResponse} from 'next/server';
 import User from '@/models/user';
+import { connectDB } from '@/lib/mongodb';
 export async function POST(req){
-    if(mongoose.connection.readyState!==1){
-        await mongoose.connect(process.env.MONGO_URI);
-    }
+    await connectDB();
     const {handle}=await req.json();
     if(!handle){
         return NextResponse.json({error:"Handle is required"},{status:400});

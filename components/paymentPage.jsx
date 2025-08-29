@@ -1,88 +1,102 @@
 "use client";
 import initiate from "@/actions/useractions";
 import Script from "next/script";
-import { useState, useEffect} from "react";
-import {useSession} from "next-auth/react";
-export default function Paymentpage({user}) {
-  console.log("user in payment page: ", user);
-  const {data:session}=useSession();
-  
-  async function pay(amount,paymentform) {
-    //set creator ans supporter from session and db
-    let a = await initiate(amount,paymentform);
-    let orderId = a.id;
-    console.log("orderId: ", orderId);
-    console.log("Public Key:", process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
-    var options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
- // Enter the Key ID generated from the Dashboard
-      amount: amount, // Amount is in currency subunits.
-      currency: "INR",
-      name: "Buy me a Pizza", //your business name
-      description: "Test Transaction",
-      image: "/pizza.png",
-      order_id: orderId, // This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-      callback_url: "http://localhost:3000/api/razorpay",
-      prefill: {
-        //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
-        name: `${session.user.name}`, //your customer's name
-        email: `${session.user.email}`, //your customer's email address
-         //Provide the customer's phone number for better conversion rates
-      },
-      notes: {
-        address: "Razorpay Corporate Office",
-      },
-      theme: {
-        color: "#3399cc",
-      },
-    };
-    if (typeof window !== "undefined" && window.Razorpay) {
-  const rzp1 = new window.Razorpay(options);
-  rzp1.open();
-} else {
-  console.error("Razorpay SDK not loaded");
-}
- 
-  }
-   const [amount,setAmount] = useState("");
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+
+export default function Paymentpage({ user }) {
+  const { data: session } = useSession();
+  const [amount, setAmount] = useState("");
   const [paymentform, setPaymentform] = useState({
     creator: null,
     supporter: null,
     message: "",
-    
   });
+
+  // Keep paymentform synced with props + session
   useEffect(() => {
-    if (!session) return;
-    setPaymentform({
-      
-      ...paymentform,
-     
-      supporter: session.user.id,
-    });
+    if (session) {
+      setPaymentform((prev) => ({
+        ...prev,
+        supporter: session.user.id,
+      }));
+    }
   }, [session]);
+
   useEffect(() => {
-    if (!user) return;
-    setPaymentform({
-      ...paymentform,
-      creator: user._id,
-      
-    });
+    if (user) {
+      setPaymentform((prev) => ({
+        ...prev,
+        creator: user._id,
+      }));
+    }
   }, [user]);
+
+  // handle inputs
   const handleAmountChange = (e) => {
     e.preventDefault();
-    let value = e.target.value.trim();
-    value = value.replace(/[^0-9]/g, "");
+    let value = e.target.value.trim().replace(/[^0-9]/g, "");
     setAmount(value);
-  }
+  };
+
   const handleMessageChange = (e) => {
     e.preventDefault();
-    let value = e.target.value.trimStart(" ");
-    setPaymentform({ ...paymentform, message: value });
-
+    setPaymentform((prev) => ({ ...prev, message: e.target.value.trimStart(" ") }));
   };
+
+  // Main pay function
+  async function pay(amount, paymentform) {
+    try {
+      if (!session) {
+        alert("You must be logged in to make a payment");
+        return;
+      }
+
+      paymentform.creator = user._id;
+      paymentform.supporter = session.user.id;
+
+      // call server action
+      const order = await initiate(amount, paymentform);
+     
+      if (!order || !order.id || !order.keyId) {
+        throw new Error("Failed to initiate payment");
+      }
+
+      const options = {
+        key: order.keyId, // ✅ comes from backend, creator-specific
+        amount: order.amount,
+        currency: "INR",
+        name: "Buy me a Pizza",
+        description: "Support your creator ❤️",
+        image: "/pizza.png",
+        order_id: order.id,
+        callback_url: "/api/razorpay", // your webhook/verify API
+        prefill: {
+          name: session.user.name,
+          email: session.user.email,
+        },
+        notes: {
+          creator: user._id,
+          supporter: session.user.id,
+        },
+        theme: { color: "#3399cc" },
+      };
+
+      if (typeof window !== "undefined" && window.Razorpay) {
+        const rzp1 = new window.Razorpay(options);
+        rzp1.open();
+      } else {
+        console.error("Razorpay SDK not loaded");
+      }
+    } catch (err) {
+      console.error("❌ Payment failed:", err);
+      alert(err.message || "Something went wrong while starting payment");
+    }
+  }
+
   return (
     <>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive"></Script>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
 
       <div className="p-4">
         <div>
@@ -114,7 +128,7 @@ export default function Paymentpage({user}) {
 
             <button
               disabled={!session}
-              onClick={()=>{pay(amount,paymentform)}}
+              onClick={() => pay(amount, paymentform)}
               className="overflow-hidden relative w-full p-2 h-10 bg-black text-white border-none rounded-md text-xl font-bold cursor-pointer z-10 group "
             >
               Pay
@@ -126,28 +140,24 @@ export default function Paymentpage({user}) {
               </span>
             </button>
           </div>
+
+          {/* Quick payment shortcuts */}
           <div className="w-full mt-2">
-            {/* payment sortcut */}
             <div className="flex h-full justify-center items-center">
               <div className=" text-white flex gap-y-1 min-h-15 gap-x-2 rounded-xl bg-gray-900/30 px-4 py-1 items-center w-full justify-evenly flex-wrap lg:flex-nowrap">
-                <button disabled={!session} onClick={()=>{setAmount(100),pay(100,paymentform)}} className="px-2 transition-all duration-300 hover:scale-125 flex h-8 w-13 items-center justify-center rounded-md border border-[#3490f340] bg-gray-900 text-gray-200 shadow-[0px_1px_4px] hover:shadow-[0px_4px_10px] shadow-gray-700">
-                  <span className="font-medium text-md">₹100</span>
-                </button>
-                <button disabled={!session} onClick={()=>{setAmount(200),pay(200,paymentform)}} className="px-2 transition-all duration-300 hover:scale-125 flex h-8 w-15 items-center justify-center rounded-md border border-[#3490f340] bg-gray-900 text-gray-200 shadow-[0px_1px_4px] hover:shadow-[0px_4px_10px] shadow-gray-700">
-                  <span className="font-medium text-md">₹200</span>
-                </button>
-                <button disabled={!session } onClick={()=>{setAmount(500),pay(500,paymentform)}} className="px-2 transition-all duration-300 hover:scale-125 flex h-8 w-15 items-center justify-center rounded-md border border-[#3490f340] bg-gray-900 text-gray-200 shadow-[0px_1px_4px] hover:shadow-[0px_4px_10px] shadow-gray-700">
-                  <span className="font-medium text-md">₹500</span>
-                </button>
-                <button disabled={!session} onClick={()=>{setAmount(1000),pay(1000,paymentform)}} className="px-2 transition-all duration-300 hover:scale-125 flex h-8 w-15 items-center justify-center rounded-md border border-[#3490f340] bg-gray-900 text-gray-200 shadow-[0px_1px_4px] hover:shadow-[0px_4px_10px] shadow-gray-700">
-                  <span className="font-medium text-md">₹1000</span>
-                </button>
-                <button disabled={!session} onClick={()=>{setAmount(5000),pay(5000,paymentform)}} className="px-2 transition-all duration-300 hover:scale-125 flex h-8 w-15 items-center justify-center rounded-md border border-[#3490f340] bg-gray-900 text-gray-200 shadow-[0px_1px_4px] hover:shadow-[0px_4px_10px] shadow-gray-700">
-                  <span className="font-medium text-md">₹5000</span>
-                </button>
-                <button disabled={!session} onClick={()=>{setAmount(10000),pay(10000,paymentform)}} className="px-2 transition-all duration-300 hover:scale-125 flex  h-8 w-15 items-center justify-center rounded-md border border-[#3490f340] bg-gray-900 text-gray-200 shadow-[0px_1px_4px] hover:shadow-[0px_4px_10px] shadow-gray-700">
-                  <span className="font-medium text-md">₹10000</span>
-                </button>
+                {[100, 200, 500, 1000, 5000, 10000].map((amt) => (
+                  <button
+                    key={amt}
+                    disabled={!session}
+                    onClick={() => {
+                      setAmount(String(amt));
+                      pay(amt, paymentform);
+                    }}
+                    className="px-2 transition-all duration-300 hover:scale-125 flex h-8 items-center justify-center rounded-md border border-[#3490f340] bg-gray-900 text-gray-200 shadow-[0px_1px_4px] hover:shadow-[0px_4px_10px] shadow-gray-700"
+                  >
+                    <span className="font-medium text-md">₹{amt}</span>
+                  </button>
+                ))}
               </div>
             </div>
           </div>

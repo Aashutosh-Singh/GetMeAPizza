@@ -22,12 +22,12 @@ export default function Navbar() {
   // Local fallback data (only used if API is not ready)
   const FALLBACK_CREATORS = useMemo(
     () => [
-      { handle: "aash_creates", name: "Aashutosh Singh", profilePic: "/profilePic-aash.png" },
-      { handle: "janedoe", name: "Jane Doe", profilePic: "/profilePic-jane.png" },
-      { handle: "pixelpanda", name: "Pixel Panda", profilePic: "/profilePic-1.png" },
-      { handle: "devdisha", name: "Disha Dev", profilePic: "/profilePic-2.png" },
-      { handle: "artbyaj", name: "Art by AJ", profilePic: "/profilePic-3.png" },
-      { handle: "chef_nova", name: "Chef Nova", profilePic: "/profilePic-4.png" },
+      { handle: "aash_creates", name: "Aashutosh Singh", profilePic: "/profilepic.png" },
+      { handle: "janedoe", name: "Jane Doe", profilePic: "/profilepic.png" },
+      { handle: "pixelpanda", name: "Pixel Panda", profilePic: "/profilepic.png" },
+      { handle: "devdisha", name: "Disha Dev", profilePic: "/profilepic.png" },
+      { handle: "artbyaj", name: "Art by AJ", profilePic: "/profilepic.png" },
+      { handle: "chef_nova", name: "Chef Nova", profilePic: "/profilepic.png" },
     ],
     []
   );
@@ -131,24 +131,24 @@ export default function Navbar() {
   if (session) {
     return (
       <>
-        <nav className={`${brandBg} relative flex items-center justify-between px-4 md:px-10 py-2`}>
+        <nav className={`${brandBg} relative flex items-center justify-between px-4 md:px-10 py-1`}>
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <img className="md:h-14 h-10" src="/logo.png" alt="Logo" />
+            <img className="md:h-10 h-8" src="/logo.png" alt="Logo" />
           </Link>
 
           {/* Search trigger */}
           <button
             onClick={openSearch}
-            className={`flex items-center rounded px-3 py-2 text-sm shadow-sm ${darkBtn}`}
+            className={`flex items-center rounded px-3 py-1 sm:py-2 text-xs sm:text-sm shadow-sm ${darkBtn}`}
             type="button"
             aria-label="Open search"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                 fill="currentColor" className="w-4 h-4 mr-2">
+                 fill="currentColor" className="sm:w-4 sm:h-4 w-3 h-3 mr-2">
               <path fillRule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clipRule="evenodd"/>
             </svg>
-            Search <span className="hidden md:flex px-1"> Creators</span>
+            Search <span className="hidden sm:flex px-1"> Creators</span>
           </button>
 
           {/* User */}
@@ -166,19 +166,19 @@ export default function Navbar() {
                 aria-expanded={dropdown}
               >
                 <img
-                  src={session.user?.image || "/default-profilePic.png"}
-                  className="rounded-full w-10 h-10"
+                  src={`${session?.user?.profilePic || "/menu.png"}`}
+                  className="rounded-full md:w-9 md:h-9 w-6 h-6"
                   alt="User"
                 />
               </button>
 
               {/* Profile dropdown (kept intact, just fixed positioning/z-index) */}
               <div
-                className={`absolute right-0 mt-2 w-56 rounded-lg shadow-lg divide-y divide-gray-200 ${brandPanel} backdrop-blur-md z-50 ${dropdown ? "" : "hidden"}`}
+                className={`absolute bg-amber-300/10 right-0 mt-2 w-56 rounded-lg shadow-lg divide-y divide-gray-200 ${brandPanel} backdrop-blur-md z-50 ${dropdown ? "" : "hidden"}`}
                 role="menu"
               >
                 <Link href="/profile" className="flex items-center gap-2 p-4 hover:bg-black/5" role="menuitem">
-                  <img src={session.user?.image || "/default-profilePic.png"} className="w-8 h-8 rounded-full" alt="" />
+                  <img src={`${session?.user?.profilePic || "/profilepic.jpg"}`} className="w-8 h-8 rounded-full" alt="" />
                   <span>Profile</span>
                 </Link>
 
@@ -187,7 +187,7 @@ export default function Navbar() {
                   <span>Dashboard</span>
                 </Link>
                 <Link href="/about" className="flex items-center gap-2 p-4 hover:bg-black/5" role="menuitem">
-                  <img className="w-5" src="/about.png" alt="" />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-info-icon lucide-info"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
                   <span>About</span>
                 </Link>
                 <button
@@ -253,7 +253,7 @@ export default function Navbar() {
                           onClick={closeSearch}
                         >
                           <img
-                            src={c.profilePic || "/default-profilePic.png"}
+                            src={c.profilePic || "/profilepic.png"}
                             alt=""
                             className="w-8 h-8 rounded-full"
                           />
@@ -280,15 +280,22 @@ export default function Navbar() {
 
   // Logged-out view (kept color consistent)
   return (
-    <nav className={`${brandBg} flex items-center justify-between px-5 py-2`}>
+    <nav className={`${brandBg} flex items-center justify-between px-5 py-1`}>
       <Link href="/" className="font-bold flex">
-        <img className="md:h-14 h-10" src="/logo.png" alt="Logo" />
+        <img className="md:h-10 h-8" src="/logo.png" alt="Logo" />
       </Link>
+      <div className="flex gap-3 text-xs sm:text-md">
       <Link href="/login">
-        <button className={`px-5 py-2 rounded-lg shadow-sm ${darkBtn}`}>
+        <button className={`px-2 md:px-5 py-1 sm:py-2 rounded-lg shadow-sm ${darkBtn}`}>
           Login
         </button>
       </Link>
+      <Link href="/signup">
+        <button className={`px-2 md:px-5 py-1 sm:py-2 rounded-lg shadow-sm ${darkBtn}`}>
+          Sign Up
+        </button>
+      </Link>
+      </div>
     </nav>
   );
 }

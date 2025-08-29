@@ -1,7 +1,7 @@
 // app/api/setrazorpay/route.js
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]";
-import connectDB from "@/lib/mongodb";
+import { authOptions } from "../auth/[...nextauth]/route";
+import {connectDB} from "@/lib/mongodb";
 import Razorpay from "@/models/razorpay";
 import crypto from "crypto";
 
@@ -36,7 +36,7 @@ export async function POST(req) {
       return new Response(JSON.stringify({ error: "Both Razorpay Id and Key are required" }), { status: 400 });
     }
 
-    await dbConnect();
+    await connectDB();
 
     const encryptedKeyId = encrypt(rpzid);
     const encryptedSecret = encrypt(rpzkey);
@@ -64,7 +64,7 @@ export async function GET() {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     }
 
-    await dbConnect();
+    await connectDB();
     const data = await Razorpay.findOne({ user: session.user.id });
 
     if (!data) {

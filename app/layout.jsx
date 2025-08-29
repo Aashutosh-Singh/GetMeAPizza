@@ -17,13 +17,13 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "BuyMeAPizza",
   description: "Fund your project through pizza",
-  icon:"/pizza.png"
+  icons:"/pizza.png"
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body  className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen relative h-full w-full -z-100   bg-[radial-gradient(circle_at_center,#FFF991,transparent)] text-black`}>
+      <body  className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen relative h-full w-full -z-100   bg-[radial-gradient(circle_at_center,#FFF991,transparent)] text-black m-0`}>
         <SessionWrapper>
         <Navbar/>
         <div className="min-h-screen">

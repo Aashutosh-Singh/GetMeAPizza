@@ -2,9 +2,12 @@
 
 "use client";
 import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 export default function AboutPage() {
+  const { data: session } = useSession();
+
   return (
     <div className="min-h-screen   flex flex-col items-center py-16 px-6">
       
@@ -54,17 +57,12 @@ export default function AboutPage() {
         transition={{ delay: 0.6, duration: 0.6 }}
         className="mt-12 flex flex-col md:flex-row gap-6"
       >
-        <Link href="/donate">
+        <Link href={session ? "/profile" : "/api/auth/signin"}>
           <button className="bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl px-6 py-3 shadow-md transition">
             Support Someone 🍕
           </button>
         </Link>
-
-        <Link href="/signup">
-          <button className="border border-orange-400 text-orange-500 hover:bg-orange-50 font-semibold rounded-xl px-6 py-3 shadow-sm transition">
-            Start Receiving
-          </button>
-        </Link>
+        
       </motion.div>
     </div>
   );

@@ -1,92 +1,81 @@
+// app/api/auth/[...nextauth]/route.js
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-
-import mongoose from "mongoose";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { connectDB } from "@/lib/mongodb";
 import User from "@/models/user";
 
-const handler = NextAuth({
+export const authOptions = {
+  session: {
+    strategy: "jwt", // ✅ JWT only
+  },
+
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_SECRET,
-      authorization: {
-        params: {
-          scope: "openid profile email",
-        },
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        await connectDB();
+
+        const user = await User.findOne({
+          email: credentials.email,
+          authProvider: "local",
+        });
+
+        if (!user) throw new Error("No user found with this email");
+        if (!user.verified) throw new Error("Please verify your email");
+
+        const isValid = await user.comparePassword(credentials.password);
+        if (!isValid) throw new Error("Invalid password");
+
+        return {
+          id: user._id.toString(),
+          email: user.email,
+          name: user.name,
+          handle: user.handle,
+          profile: user.profile,
+        };
       },
     }),
   ],
+
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
-      
-      // console.log("user: ", user);
-      
-      try {
-        if (mongoose.connection.readyState !== 1) {
-          await mongoose.connect(process.env.MONGO_URI);
-          console.log("The connection was established")
-        }
-        if (account.provider == "google") {
-          //console.log("Working with db")
-          const currentUser = await User.findOne({
-            authProvider: "google",
-            googleId: user.id,
-          });
-          if (!currentUser) {
-            console.log("the user wasn't found ");
-            const useremail = profile.email || user.email || email;
-            const newUser = new User({
-              email: useremail,
-              name: profile.name,
-              googleId: user.id,
-              authProvider: "google",
-              profilePic: user.image,
-            });
-            await newUser.save();
-            //console.log("The user was saved")
-            return true;
-          } else if (currentUser) {
-            return true;
-          }
-        } else if (account.provider == "credentials") {
-          const currentUser = await User.findOne({
-            email: profile.email,
-            authProvider: "local",
-          });
-          if (!currentUser) {
-            return "/login";
-          }
-        }
-      } catch (error) {
-        console.log("Mongoose connection error message: ", error.message);
-        return false;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.handle = user.handle;
+       
+        token.name = user.name;
+        token.profile = user.profile;
+        token.email = user.email;
+       
       }
+      
+      return token;
     },
-    async session({session,user}){
-      if(mongoose.connection.readyState!==1){
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log("The connection was established")
-      }
-      const currentUser=await User.findOne({
-        email:session.user.email
-      })
-      if(currentUser){
-        session.user.id=currentUser.id.toString();
-      session.user.profilePic=currentUser.profilePic;
-      session.user.coverPic=currentUser.coverPic;
-      session.user.tagline=currentUser.tagline;
-      session.user.handle=currentUser.handle;
-      session.user.name=currentUser.name;
+
+    async session({ session, token }) {
+      session.user = {
+        id: token.id,
+        handle: token.handle,
+        
+        name: token.name,
+        email: token.email,
+        profile: token.profile,
+      };
       
-      }
       return session;
     },
+
     async redirect({ baseUrl }) {
       return `${baseUrl}/profile`;
     },
   },
 
-  secret: process.env.NEXTAUTH_SECRET, // Optional but recommended
-});
+  secret: process.env.NEXTAUTH_SECRET,
+};
 
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

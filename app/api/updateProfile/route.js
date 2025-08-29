@@ -1,74 +1,50 @@
-import mongoose from "mongoose";
+import { connectDB } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";  // ✅ correct import
 import User from "@/models/user";
+
 export async function POST(req) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);  // ✅ now defined
+
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const { name,email, handle, tagline, profilePic, coverPic } = await req.json();
-    
-    if ((handle.length < 3 && handle.length!==0) || handle.length > 25  ) {
-      return NextResponse.json({ error: "Handle must be between 3 and 25 characters" }, { status: 400 });
-    }
-    
-    if(mongoose.connection.readyState!==1){
-        await mongoose.connect(process.env.MONGODB_URI);
-    }
-    const user=await User.findOne({ email: email });
-    
-    if(user.handle===handle){
-      if(name.length>3 && name.length<25){
-        user.name=name;
-      }
-      user.name=name;
-      user.profilePic=profilePic;
-      user.coverPic=coverPic;
-      if(tagline.length>3 && tagline.length<100 ){
-        user.tagline=tagline;
-      }
-      
-      await user.save();
-      return NextResponse.json({ message: "Profile updated successfully" }, { status: 200 });
-    }
-    else{
-      const existinguser=await User.find({handle:handle});
-      if(existinguser){console.log(existinguser);}
-      if(existinguser.length>0){
+    const { name, email, handle, tagline, profilePic, coverPic, bio } = await req.json();
+    await connectDB();
 
-        return NextResponse.json({ error: "Handle already exists" }, { status: 400 });
-      }
-      else{
-        if(name.length>3 && name.length<25){
-          user.name=name;
-        }
-        user.handle=handle;
-        user.profilePic=profilePic;
-        user.coverPic=coverPic;
-        if(tagline.length>3 && tagline.length<100 ){
-        user.tagline=tagline;
-      }
-        await user.save();
-        return NextResponse.json({ message: "Profile updated successfully" }, { status: 200 });
-      }
-    }
-    
-   
+    const user = await User.findOne({ handle });
     if (!user) {
-        console.log("User not found");
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    return NextResponse.json(
-      { message: "Profile updated successfully" },
-      { status: 200 }
-    );
+
+    // --- validation + updates ---
+    if (handle && (handle.length < 3 || handle.length > 25)) {
+      return NextResponse.json({ error: "Handle must be between 3 and 25 characters" }, { status: 400 });
+    }
+
+    if (handle && handle !== user.handle) {
+      const existingUser = await User.findOne({ handle });
+      if (existingUser) {
+        return NextResponse.json({ error: "Handle already exists" }, { status: 400 });
+      }
+      user.handle = handle;
+    }
+
+    if (name?.length >= 3 && name?.length <= 25) user.name = name;
+    if (tagline?.length >= 3 && tagline?.length <= 100) user.tagline = tagline;
+    if (bio?.length <= 500) user.bio = bio;
+
+    if (profilePic) user.profilePic = profilePic;
+    if (coverPic) user.coverPic = coverPic;
+
+    await user.save();
+
+    return NextResponse.json({ message: "Profile updated successfully" }, { status: 200 });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error("Update profile error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
